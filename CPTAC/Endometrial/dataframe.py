@@ -14,8 +14,12 @@ import pandas as pd
 import os
 import re
 import math
+import hashlib
+from serverdata import get_remote_file
 from .fileLoader import FileLoader
+
 class DataFrameLoader:
+
     def __init__(self, fileName):
         self.fileName = fileName
     def createDataFrame(self):
@@ -26,6 +30,7 @@ class DataFrameLoader:
         Returns
         Dataframe of parsed datafile depending on the data type
         """
+	
         if bool(re.search(r'\.txt[.|(a-z)]{,7}$', self.fileName)):
             #temp fix for reading error on clinical_v2:
             file = open(self.fileName, "r", errors="ignore")
