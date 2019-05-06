@@ -18,10 +18,11 @@ from .meta import MetaData
 from .molecular import MolecularData
 from .utilities import Utilities
 from .queries import Queries
+from .serverdata import get_remote_file
 
 def warning():
     print("\n","******PLEASE READ******")
-    warning = "WARNING: This data is under a publication embargo until July 1, 2019. CPTAC is a community resource project and data are made available rapidly after generation for community research use. The embargo allows exploring and utilizing the data, but the data may not be in a publication until July 1, 2019. Please see https://proteomics.cancer.gov/data-portal/about/data-use-agreement or enter embargo() to open the webpage for more details."
+    warning = "WARNINGssssss: This data is under a publication embargo until July 1, 2019. CPTAC is a community resource project and data are made available rapidly after generation for community research use. The embargo allows exploring and utilizing the data, but the data may not be in a publication until July 1, 2019. Please see https://proteomics.cancer.gov/data-portal/about/data-use-agreement or enter embargo() to open the webpage for more details."
     wrapped_list = textwrap.wrap(warning)
     for line in wrapped_list:
         print(line)
@@ -57,6 +58,7 @@ data_directory = dir_path + os.sep + "Data" + os.sep
 
 print("Loading Dictionary...")
 dict = {}
+get_remote_file("definitions.txt",data_directory + "definitions.txt","dictionary.txt")
 file = open(data_directory + "definitions.txt", "r")
 
 for line in file:
@@ -66,28 +68,38 @@ for line in file:
 file.close()
 
 print("Loading Clinical Data...")
+get_remote_file("clinical.txt",data_directory + "clinical.txt","dictionary.txt")
 clinical_unfiltered = DataFrameLoader(data_directory + "clinical.txt").createDataFrame()
 clinical = clinical_unfiltered[clinical_unfiltered["Case_excluded"] == "No"] #Drops all samples with Case_excluded == Yes
 clinical.name = clinical_unfiltered.name
 
 print("Loading Proteomics Data...")
+get_remote_file("proteomics.cct.gz",data_directory + "proteomics.cct.gz","dictionary.txt")
 proteomics = DataFrameLoader(data_directory + "proteomics.cct.gz").createDataFrame()
 
 print("Loading Transcriptomics Data...")
+get_remote_file("transcriptomics_linear.cct.gz",data_directory + "transcriptomics_linear.cct.gz","dictionary.txt")
 transcriptomics = DataFrameLoader(data_directory + "transcriptomics_linear.cct.gz").createDataFrame()
+get_remote_file("transcriptomics_circular.cct.gz",data_directory + "transcriptomics_circular.cct.gz","dictionary.txt")
 transcriptomics_circular = DataFrameLoader(data_directory + "transcriptomics_circular.cct.gz").createDataFrame()
+get_remote_file("miRNA.cct.gz",data_directory + "miRNA.cct.gz","dictionary.txt")
 miRNA = DataFrameLoader(data_directory + "miRNA.cct.gz").createDataFrame()
 
 print("Loading CNA Data...")
+get_remote_file("CNA.cct.gz",data_directory + "CNA.cct.gz","dictionary.txt")
 cna = DataFrameLoader(data_directory + "CNA.cct.gz").createDataFrame()
 
 print("Loading Phosphoproteomics Data...")
+get_remote_file("phosphoproteomics_site.cct.gz",data_directory + "phosphoproteomics_site.cct.gz" ,"dictionary.txt")
 phosphoproteomics = DataFrameLoader(data_directory + "phosphoproteomics_site.cct.gz").createDataFrame()
+get_remote_file("phosphoproteomics_gene.cct.gz",data_directory + "phosphoproteomics_gene.cct.gz" ,"dictionary.txt")
 phosphoproteomics_gene = DataFrameLoader(data_directory + "phosphoproteomics_gene.cct.gz").createDataFrame()
 
 print("Loading Somatic Mutation Data...")
+get_remote_file("somatic.cbt.gz",data_directory + "somatic.cbt.gz" ,"dictionary.txt")
 somatic_binary = DataFrameLoader(data_directory + "somatic.cbt.gz").createDataFrame()
 somatic_binary.name = "somatic binary"
+get_remote_file("somatic.maf.gz",data_directory + "somatic.maf.gz" ,"dictionary.txt")
 somatic_unparsed = pd.read_csv(data_directory + "somatic.maf.gz", sep = "\t")
 somatic_unparsed.name = "somatic MAF unparsed"
 somatic_maf = DataFrameLoader(data_directory + "somatic.maf.gz").createDataFrame()

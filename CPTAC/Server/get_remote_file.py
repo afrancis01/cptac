@@ -1,6 +1,6 @@
-from boxsdk import DevelopmentClient
 import hashlib
 import os
+import wget
 import errno
 
 def concat(arr, delim):
@@ -33,16 +33,13 @@ def makesum(filename):
     myhash = hasher.hexdigest()
     return myhash
 
-def retrieve_file(client, fileid, local_path):
-    box_file = client.file(fileid).get()
+def retrieve_file(fileurl, local_path):
     ensure_dir(local_path)
-    file = open(local_path,'wb')
-    box_file.download_to(file)
-    file.close()
-        
+    data_file_name = wget.download(fileurl, local_path)
+    
 def compare_sums(serversum, localfile):
     try:
-        md5returned = makesum(localfile) 
+        md5returned = makesum(localfile)
         if serversum == md5returned:
             return 1
         else:
@@ -51,18 +48,15 @@ def compare_sums(serversum, localfile):
         return 0
 
 def get_remote_file(remote_path, local_path, dict_path):
-    client = DevelopmentClient()
     dict = parse_file_dict(dict_path)
-    print(dict.get(remote_path))
-    print(dict.get(remote_path + ".md5hash"))
-    retrieve_file(client, dict.get(remote_path + ".md5hash"), "tempsum")
-    sumfile = open("tempsum",'r')
+    retrieve_file(dict.get(remote_path + ".md5hash"), "tempsum.md5hash")
+    sumfile = open("tempsum.md5hash",'r')
     sum = sumfile.readline()
     if not compare_sums(sum, local_path):
-        retrieve_file(client, dict.get(remote_path),local_path)
-        print("file downloaded")
+        retrieve_file(dict.get(remote_path),local_path)
+        print("\nfile downloaded")
     else:
-        print("file exists and is up to date")
+        print("\nfile exists and is up to date")
+    os.remove("tempsum.md5hash")
 
-
-get_remote_file("EndometrialData/clinical.txt","Data/do/notenter/clinical.txt","dictionary.txt")
+get_remote_file("clinical.txt","Data/clinical.txt","dictionary.txt")
